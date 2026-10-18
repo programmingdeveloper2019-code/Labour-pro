@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">LabourPro</string>
+    <string name="app_title">LabourPro</string>
+    <string name="dashboard">ပင်မဒက်ရှ်ဘုတ်</string>
+    <string name="pos_entry">အမြန်စာရင်းသွင်း</string>
+    <string name="attendance_log">တက်ရောက်မှုမှတ်တမ်း</string>
+    <string name="worker_master">လုပ်သားစာရင်း</string>
+    <string name="site_master">ဆိုဒ်စာရင်း</string>
+    <string name="advance_ledger">ကြိုထုတ်ငွေစာရင်း</string>
+    <string name="excel_export">Excel ထုတ်ယူရန်</string>
+
+    <string name="site_selection">၁။ ဆောက်လုပ်ရေးဆိုဒ်နှင့် နေ့စွဲ</string>
+    <string name="worker_selection">၂။ လုပ်သားရွေးချယ်ခြင်း</string>
+    <string name="shift_attendance">၃။ အလုပ်ချိန် တက်ရောက်မှု</string>
+    <string name="ot_and_rates">၄။ အချိန်ပို (OT) နာရီနှင့် နှုန်းထား</string>
+    <string name="advance_and_paid">၅။ ကြိုထုတ်ငွေ၊ ပေးငွေနှင့် မှတ်ချက်</string>
+    <string name="real_time_calc">အချိန်နှင့်တပြေးညီ တွက်ချက်မှု</string>
+
+    <string name="full_day">တစ်နေ့လုံး (၁.၀)</string>
+    <string name="half_day_am">မနက်ဝက် (၀.၅)</string>
+    <string name="half_day_pm">ညနေဝက် (၀.၅)</string>
+    <string name="quarter_day">လေးပုံတစ်ပုံ (၀.၂၅)</string>
+    <string name="absent">ပျက်ကွက် (၀.၀)</string>
+
+    <string name="morning_shift">နံနက်ပိုင်း</string>
+    <string name="evening_shift">ညနေပိုင်း</string>
+    <string name="present">တက်ရောက်</string>
+    <string name="half_day">တစ်ဝက်</string>
+
+    <string name="ot_hours">OT နာရီ</string>
+    <string name="daily_rate">နေ့တွက်ခ (ကျပ်)</string>
+    <string name="ot_rate">OT ကြေး (ကျပ်/နာရီ)</string>
+    <string name="advance_today">ယနေ့ကြိုထုတ်ငွေ (ကျပ်)</string>
+    <string name="paid_today">ယနေ့ပေးငွေ (ကျပ်)</string>
+    <string name="remark">လုပ်ငန်းမှတ်ချက်</string>
+
+    <string name="daily_wages">နေ့တွက်လုပ်အားခ</string>
+    <string name="ot_wages">အချိန်ပိုလုပ်အားခ</string>
+    <string name="total_earned">စုစုပေါင်းရငွေ</string>
+    <string name="less_advance">နုတ် - ယနေ့ကြိုထုတ်ငွေ (-)</string>
+    <string name="less_paid">နုတ် - ယနေ့ပေးငွေ (-)</string>
+    <string name="balance_due">ပေးရန်ကျန်ငွေ</string>
+
+    <string name="save_and_next">သိမ်းဆည်းပြီး နောက်တစ်ဦး</string>
+    <string name="save_record">သိမ်းဆည်းမည်</string>
+    <string name="reset_form">အသစ်ပြန်စ</string>
+    <string name="duplicate_warning">သတိပေးချက်- ဤလုပ်သားသည် ယနေ့အတွက် စာရင်းသွင်းပြီးဖြစ်ပါသည်!</string>
+
+    <string name="carpenter">လက်သမား</string>
+    <string name="mason">ပန်းရံ</string>
+    <string name="helper">အကူ/အလုပ်ကြမ်း</string>
+    <string name="electrician">လျှပ်စစ်ကျွမ်းကျင်</string>
+    <string name="plumber">ရေပိုက်ကျွမ်းကျင်</string>
+    <string name="painter">ဆေးသုတ်</string>
+    <string name="welder">ဝဟ်ဆော်</string>
+    <string name="bar_bender">သံချည်သံကွေး</string>
+    <string name="foreman">ဖိုမင်/ခေါင်းဆောင်</string>
+
+    <string name="export_report_title">လုပ်အားခနှင့် တက်ရောက်မှု အစီရင်ခံစာ</string>
+    <string name="export_format_pdf">PDF အစီရင်ခံစာ (.pdf)</string>
+    <string name="export_format_excel">Excel ဖိုင် (.xlsx)</string>
+    <string name="export_format_csv">CSV ဖိုင် (.csv)</string>
+    <string name="filter_by_date">ရက်စွဲ ရွေးချယ်မှု</string>
+    <string name="report_date">ထုတ်သည့်ရက်စွဲ</string>
+    <string name="open_directly">တိုက်ရိုက် ဖွင့်ကြည့်မည်</string>
+    <string name="share_report">မျှဝေမည်</string>
+</resources>

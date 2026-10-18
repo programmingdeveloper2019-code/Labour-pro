@@ -1,0 +1,6 @@
+{
+  "name": "LabourPro",
+  "description": "ဆောက်လုပ်ရေး လုပ်သားစာရင်း၊ နေ့စဉ်တက်ရောက်မှု မှတ်တမ်း၊ OT နှင့် ကြိုထုတ်ငွေ တွက်ချက်မှု စနစ် (Construction Labour Attendance & Wage POS)",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

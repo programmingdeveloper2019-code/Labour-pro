@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">LabourPro</string>
+    <string name="app_title">LabourPro</string>
+    <string name="dashboard">Dashboard</string>
+    <string name="pos_entry">POS Entry</string>
+    <string name="attendance_log">Attendance Log</string>
+    <string name="worker_master">Worker Master</string>
+    <string name="site_master">Site Master</string>
+    <string name="advance_ledger">Advance Ledger</string>
+    <string name="excel_export">Excel Export</string>
+
+    <string name="site_selection">1. CONSTRUCTION SITE &amp; DATE</string>
+    <string name="worker_selection">2. WORKER SELECTION</string>
+    <string name="shift_attendance">3. SHIFT ATTENDANCE</string>
+    <string name="ot_and_rates">4. OVERTIME (OT) &amp; RATES</string>
+    <string name="advance_and_paid">5. ADVANCES, PAYMENTS &amp; REMARK</string>
+    <string name="real_time_calc">REAL-TIME CALCULATION</string>
+
+    <string name="full_day">Full Day (1.0)</string>
+    <string name="half_day_am">AM Half (0.5)</string>
+    <string name="half_day_pm">PM Half (0.5)</string>
+    <string name="quarter_day">Quarter (0.25)</string>
+    <string name="absent">Absent (0.0)</string>
+
+    <string name="morning_shift">Morning Shift</string>
+    <string name="evening_shift">Evening Shift</string>
+    <string name="present">Present</string>
+    <string name="half_day">Half Day</string>
+
+    <string name="ot_hours">OT Hours</string>
+    <string name="daily_rate">Daily Rate (MMK / ကျပ်)</string>
+    <string name="ot_rate">OT Rate (MMK / hr)</string>
+    <string name="advance_today">Advance Today (MMK / ကျပ်)</string>
+    <string name="paid_today">Paid Today (MMK / ကျပ်)</string>
+    <string name="remark">Work Remark / Notes</string>
+
+    <string name="daily_wages">Daily Wages</string>
+    <string name="ot_wages">OT Wages</string>
+    <string name="total_earned">Total Earned</string>
+    <string name="less_advance">Less Advance Today (-)</string>
+    <string name="less_paid">Less Paid Today (-)</string>
+    <string name="balance_due">Remaining Balance Due</string>
+
+    <string name="save_and_next">SAVE &amp; NEXT WORKER</string>
+    <string name="save_record">Save Only</string>
+    <string name="reset_form">Reset</string>
+    <string name="duplicate_warning">WARNING: Worker is already marked for this date!</string>
+
+    <string name="carpenter">Carpenter</string>
+    <string name="mason">Mason</string>
+    <string name="helper">Helper</string>
+    <string name="electrician">Electrician</string>
+    <string name="plumber">Plumber</string>
+    <string name="painter">Painter</string>
+    <string name="welder">Welder</string>
+    <string name="bar_bender">Bar Bender</string>
+    <string name="foreman">Foreman</string>
+
+    <string name="export_report_title">Labour Attendance &amp; Wages Report</string>
+    <string name="export_format_pdf">PDF Document (.pdf)</string>
+    <string name="export_format_excel">Excel Spreadsheet (.xlsx)</string>
+    <string name="export_format_csv">CSV File (.csv)</string>
+    <string name="filter_by_date">Filter by Date</string>
+    <string name="report_date">Report Date</string>
+    <string name="open_directly">Open &amp; View Directly</string>
+    <string name="share_report">Share Report</string>
+</resources>
