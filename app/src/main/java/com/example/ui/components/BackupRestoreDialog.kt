@@ -4,6 +4,7 @@ import android.net.Uri
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -40,6 +41,10 @@ fun BackupRestoreDialog(
     val currentLanguage by LanguageManager.currentLanguage.collectAsState()
     val isMy = currentLanguage == AppLanguage.MYANMAR
 
+    val sites by viewModel.allSites.collectAsState()
+    val workers by viewModel.allWorkers.collectAsState()
+    val attendance by viewModel.allAttendance.collectAsState()
+
     var pendingRestoreData by remember { mutableStateOf<LabourBackupData?>(null) }
     var isBackingUp by remember { mutableStateOf(false) }
     var statusMessage by remember { mutableStateOf<String?>(null) }
@@ -55,10 +60,12 @@ fun BackupRestoreDialog(
                 if (success) {
                     Toast.makeText(
                         context,
-                        if (isMy) "ဒေတာ အရန်သိမ်းဆည်းမှု အောင်မြင်ပါသည်!" else "Local backup saved successfully!",
+                        if (isMy) "ဆိုဒ် (${backup.sites.size}) ခု၊ လုပ်သား (${backup.workers.size}) ဦး နှင့် နေ့စဉ်တက်ရောက်မှု (${backup.attendance.size}) ခု အားလုံးကို အောင်မြင်စွာ အရန်သိမ်းဆည်းပြီးပါပြီ!" 
+                            else "Backup saved successfully (${backup.sites.size} sites, ${backup.workers.size} workers, ${backup.attendance.size} attendance records)!",
                         Toast.LENGTH_LONG
                     ).show()
-                    statusMessage = if (isMy) "စက်တွင်းသိမ်းဆည်းမှု အောင်မြင်သည်" else "Local file backup created."
+                    statusMessage = if (isMy) "နေ့စဉ်တက်ရောက်မှုမှတ်တမ်း (${backup.attendance.size}) ခု ပါဝင်သည့် အရန်ဖိုင် သိမ်းဆည်းပြီးပါပြီ" 
+                        else "Local backup created with ${backup.attendance.size} daily attendance records."
                 } else {
                     Toast.makeText(context, "Failed to write backup file", Toast.LENGTH_SHORT).show()
                 }
@@ -111,7 +118,7 @@ fun BackupRestoreDialog(
                         fontSize = 17.sp
                     )
                     Text(
-                        text = if (isMy) "Google Drive နှင့် ဖုန်းစက်တွင်းသို့ သိမ်းဆည်းနိုင်ပါသည်" else "Save to Google Drive & Local storage",
+                        text = if (isMy) "နေ့စဉ်တက်ရောက်မှု၊ လုပ်သား၊ ဆိုဒ်များအားလုံး သိမ်းဆည်းနိုင်ပါသည်" else "Includes all daily attendance, workers & sites",
                         fontSize = 11.sp,
                         color = Slate500
                     )
@@ -125,6 +132,39 @@ fun BackupRestoreDialog(
                     .padding(vertical = 4.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
+                // Live summary card showing exact records that will be included in the backup
+                Surface(
+                    shape = RoundedCornerShape(10.dp),
+                    color = MaterialTheme.colorScheme.surfaceVariant,
+                    border = BorderStroke(1.dp, PrimaryContainerLight),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(
+                        modifier = Modifier.padding(12.dp),
+                        verticalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        Text(
+                            text = if (isMy) "📦 အရန်သိမ်းမည့် ဒေတာစာရင်း (Data in Backup):" else "📦 Included in Full Backup:",
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Slate900
+                        )
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text("🏢 ${if (isMy) "ဆိုဒ်များ" else "Sites"}: ${sites.size}", fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
+                            Text("👷 ${if (isMy) "လုပ်သား" else "Workers"}: ${workers.size}", fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
+                            Text(
+                                "📝 ${if (isMy) "တက်ရောက်မှု" else "Attendance"}: ${attendance.size}",
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.ExtraBold,
+                                color = OtBlue
+                            )
+                        }
+                    }
+                }
+
                 if (statusMessage != null) {
                     Surface(
                         color = WagesGreenLight,
@@ -148,7 +188,11 @@ fun BackupRestoreDialog(
                             val file: File = BackupManager.createBackupFile(context, backup)
                             BackupManager.shareBackupToDriveOrApps(context, file)
                             isBackingUp = false
-                            statusMessage = if (isMy) "Google Drive / ဖိုင်မျှဝေရန် အသင့်ဖြစ်ပါပြီ" else "Backup file prepared for Google Drive / Share."
+                            statusMessage = if (isMy) {
+                                "နေ့စဉ်တက်ရောက်မှုမှတ်တမ်း (${backup.attendance.size}) ခု ပါဝင်သည့် အရန်ဖိုင် Drive သို့ မျှဝေရန် အသင့်ဖြစ်ပါပြီ"
+                            } else {
+                                "Backup file ready with ${backup.attendance.size} daily attendance records."
+                            }
                         }
                     },
                     shape = RoundedCornerShape(12.dp),
@@ -286,7 +330,7 @@ fun BackupRestoreDialog(
                 Card(
                     onClick = {
                         val vault = BackupManager.findExistingPersistentVault(context)
-                        if (vault != null && vault.workers.isNotEmpty()) {
+                        if (vault != null && (vault.workers.isNotEmpty() || vault.attendance.isNotEmpty() || vault.sites.isNotEmpty())) {
                             pendingRestoreData = vault
                         } else {
                             Toast.makeText(
@@ -327,7 +371,7 @@ fun BackupRestoreDialog(
                                 fontSize = 14.sp
                             )
                             Text(
-                                text = if (isMy) "Uninstall ပြန်လုပ်ထားသော်လည်း ကျန်ရှိနေသော ဒေတာများကို ရယူပါ" else "Restores auto-backed-up workers and records from persistent storage",
+                                text = if (isMy) "Uninstall ပြန်လုပ်ထားသော်လည်း ကျန်ရှိနေသော နေ့စဉ်တက်ရောက်မှုနှင့် ဒေတာများကို ရယူပါ" else "Restores auto-backed-up attendance, workers and records",
                                 fontSize = 11.sp,
                                 color = Slate600
                             )
@@ -372,7 +416,7 @@ fun BackupRestoreDialog(
                         Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                             Text("🏢 ${if (isMy) "ဆိုဒ်များ" else "Sites"}: ${backup.sites.size}")
                             Text("👷 ${if (isMy) "လုပ်သားများ" else "Workers"}: ${backup.workers.size}")
-                            Text("📝 ${if (isMy) "တက်ရောက်မှု မှတ်တမ်းများ" else "Attendance Logs"}: ${backup.attendance.size}")
+                            Text("📝 ${if (isMy) "နေ့စဉ်တက်ရောက်မှု မှတ်တမ်းများ (Daily Attendance)" else "Daily Attendance Records"}: ${backup.attendance.size}", fontWeight = FontWeight.Bold, color = OtBlue)
                             if (backup.exportedDate.isNotBlank()) {
                                 Text("📅 ${if (isMy) "ထုတ်ယူခဲ့သည့်ရက်" else "Date"}: ${backup.exportedDate}", fontSize = 11.sp, color = Slate500)
                             }

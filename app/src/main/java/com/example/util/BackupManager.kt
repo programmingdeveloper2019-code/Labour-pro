@@ -163,7 +163,7 @@ object BackupManager {
                 val obj = attendanceArray.getJSONObject(i)
                 attendance.add(
                     AttendanceRecord(
-                        id = 0,
+                        id = obj.optLong("id", 0L),
                         date = obj.optString("date", "2026-01-01"),
                         siteCode = obj.optString("siteCode", ""),
                         siteName = obj.optString("siteName", ""),
@@ -200,7 +200,7 @@ object BackupManager {
      * uninstalls and reinstalls the app, the data can be recovered without re-entering workers.
      */
     fun autoSaveVault(context: Context, backup: LabourBackupData) {
-        if (backup.workers.isEmpty() && backup.sites.isEmpty()) return
+        if (backup.workers.isEmpty() && backup.sites.isEmpty() && backup.attendance.isEmpty()) return
         try {
             val json = serializeToJson(backup)
 
@@ -249,8 +249,8 @@ object BackupManager {
     }
 
     /**
-     * Proactively searches persistent locations on device to restore previously saved workers
-     * when the app is freshly reinstalled or when database has no workers.
+     * Proactively searches persistent locations on device to restore previously saved records
+     * (workers, sites, daily attendance) when the app is freshly reinstalled or when database is empty.
      */
     fun findExistingPersistentVault(context: Context): LabourBackupData? {
         try {
@@ -263,8 +263,8 @@ object BackupManager {
                 if (publicVault.exists() && publicVault.length() > 0) {
                     val content = publicVault.readText(Charsets.UTF_8)
                     val data = parseFromJson(content)
-                    if (data.workers.isNotEmpty()) {
-                        Log.i(TAG, "Restored vault from Public Documents (${data.workers.size} workers)")
+                    if (data.workers.isNotEmpty() || data.attendance.isNotEmpty() || data.sites.isNotEmpty()) {
+                        Log.i(TAG, "Restored vault from Public Documents (${data.workers.size} workers, ${data.attendance.size} attendance)")
                         return data
                     }
                 }
@@ -277,8 +277,8 @@ object BackupManager {
             val prefsJson = prefs.getString(KEY_VAULT_BACKUP_JSON, null)
             if (!prefsJson.isNullOrBlank()) {
                 val data = parseFromJson(prefsJson)
-                if (data.workers.isNotEmpty()) {
-                    Log.i(TAG, "Restored vault from SharedPreferences (${data.workers.size} workers)")
+                if (data.workers.isNotEmpty() || data.attendance.isNotEmpty() || data.sites.isNotEmpty()) {
+                    Log.i(TAG, "Restored vault from SharedPreferences (${data.workers.size} workers, ${data.attendance.size} attendance)")
                     return data
                 }
             }
@@ -290,7 +290,7 @@ object BackupManager {
                 if (extFile.exists() && extFile.length() > 0) {
                     val content = extFile.readText(Charsets.UTF_8)
                     val data = parseFromJson(content)
-                    if (data.workers.isNotEmpty()) {
+                    if (data.workers.isNotEmpty() || data.attendance.isNotEmpty() || data.sites.isNotEmpty()) {
                         return data
                     }
                 }
@@ -301,7 +301,7 @@ object BackupManager {
             if (internalFile.exists() && internalFile.length() > 0) {
                 val content = internalFile.readText(Charsets.UTF_8)
                 val data = parseFromJson(content)
-                if (data.workers.isNotEmpty()) {
+                if (data.workers.isNotEmpty() || data.attendance.isNotEmpty() || data.sites.isNotEmpty()) {
                     return data
                 }
             }

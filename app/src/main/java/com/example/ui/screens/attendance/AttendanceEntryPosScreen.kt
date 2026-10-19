@@ -65,7 +65,7 @@ fun AttendanceEntryPosScreen(
     val currentLanguage by LanguageManager.currentLanguage.collectAsState()
 
     val displayWorkers = remember(activeWorkers, allWorkers) {
-        if (activeWorkers.isNotEmpty()) activeWorkers else allWorkers
+        if (allWorkers.isNotEmpty()) allWorkers else activeWorkers
     }
 
     var showSiteDropdown by remember { mutableStateOf(false) }
@@ -1339,7 +1339,7 @@ fun AttendanceEntryPosScreen(
                         Icon(Icons.Default.Save, contentDescription = null, tint = Slate900, modifier = Modifier.size(22.dp))
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = LanguageManager.getString("update_record"),
+                            text = LanguageManager.getString("update_record", currentLanguage),
                             fontSize = 15.sp,
                             fontWeight = FontWeight.Bold,
                             color = Slate900
@@ -1374,7 +1374,7 @@ fun AttendanceEntryPosScreen(
                             Icon(Icons.Default.Delete, contentDescription = null, tint = Color.White, modifier = Modifier.size(18.dp))
                             Spacer(modifier = Modifier.width(6.dp))
                             Text(
-                                text = LanguageManager.getString("delete_record"),
+                                text = LanguageManager.getString("delete_record", currentLanguage),
                                 fontWeight = FontWeight.Bold,
                                 color = Color.White
                             )
@@ -1390,7 +1390,7 @@ fun AttendanceEntryPosScreen(
                         ) {
                             Icon(Icons.Default.Close, contentDescription = null, modifier = Modifier.size(18.dp))
                             Spacer(modifier = Modifier.width(6.dp))
-                            Text(LanguageManager.getString("cancel_edit"), fontWeight = FontWeight.Bold)
+                            Text(LanguageManager.getString("cancel_edit", currentLanguage), fontWeight = FontWeight.Bold)
                         }
                     }
                 } else {
@@ -1408,7 +1408,7 @@ fun AttendanceEntryPosScreen(
                         Icon(Icons.Default.FastForward, contentDescription = null, tint = Slate900, modifier = Modifier.size(22.dp))
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = LanguageManager.getString("save_and_next"),
+                            text = LanguageManager.getString("save_and_next", currentLanguage),
                             fontSize = 15.sp,
                             fontWeight = FontWeight.Bold,
                             color = Slate900
@@ -1427,7 +1427,7 @@ fun AttendanceEntryPosScreen(
                         ) {
                             Icon(Icons.Default.Save, contentDescription = null, modifier = Modifier.size(18.dp))
                             Spacer(modifier = Modifier.width(6.dp))
-                            Text(LanguageManager.getString("save_only"), fontWeight = FontWeight.Bold)
+                            Text(LanguageManager.getString("save_only", currentLanguage), fontWeight = FontWeight.Bold)
                         }
 
                         OutlinedButton(
@@ -1437,7 +1437,7 @@ fun AttendanceEntryPosScreen(
                         ) {
                             Icon(Icons.Default.Refresh, contentDescription = null, modifier = Modifier.size(18.dp))
                             Spacer(modifier = Modifier.width(6.dp))
-                            Text(LanguageManager.getString("reset"), fontWeight = FontWeight.Bold)
+                            Text(LanguageManager.getString("reset", currentLanguage), fontWeight = FontWeight.Bold)
                         }
                     }
                 }

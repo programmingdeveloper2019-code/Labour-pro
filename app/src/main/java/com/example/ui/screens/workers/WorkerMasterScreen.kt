@@ -600,12 +600,12 @@ fun WorkerItemCard(
                         modifier = Modifier.weight(1f),
                         verticalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
-                        // Worker Name: Extra Bold, 17sp, ample line-height for Myanmar fonts, multi-line (up to 2)
+                        // Worker Name: Black weight, 18sp, ample line-height for Myanmar fonts, multi-line (up to 2)
                         Text(
                             text = worker.name,
-                            fontWeight = FontWeight.ExtraBold,
-                            fontSize = 17.sp,
-                            lineHeight = 23.sp,
+                            fontWeight = FontWeight.Black,
+                            fontSize = 18.sp,
+                            lineHeight = 25.sp,
                             color = MaterialTheme.colorScheme.onSurface,
                             maxLines = 2,
                             overflow = TextOverflow.Ellipsis

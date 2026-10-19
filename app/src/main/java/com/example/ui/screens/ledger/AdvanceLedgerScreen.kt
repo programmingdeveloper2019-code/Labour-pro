@@ -22,8 +22,10 @@ import com.example.ui.components.StatusBadge
 import com.example.ui.components.TradeIcon
 import com.example.ui.theme.*
 import com.example.ui.viewmodel.LabourViewModel
+import com.example.util.AppLanguage
 import com.example.util.CategoryManager
 import com.example.util.ExcelExportHelper
+import com.example.util.LanguageManager
 import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -32,6 +34,8 @@ fun AdvanceLedgerScreen(
     viewModel: LabourViewModel,
     modifier: Modifier = Modifier
 ) {
+    val currentLanguage by LanguageManager.currentLanguage.collectAsState()
+    val isMy = currentLanguage == AppLanguage.MYANMAR
     val workers by viewModel.allWorkers.collectAsState()
     val sites by viewModel.allSites.collectAsState()
     val allAttendance by viewModel.allAttendance.collectAsState()
@@ -61,7 +65,7 @@ fun AdvanceLedgerScreen(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 Text(
-                    text = "Advance & Balance Ledger",
+                    text = if (isMy) "ကြိုထုတ်ငွေနှင့် လက်ကျန်စာရင်း" else "Advance & Balance Ledger",
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.White
@@ -78,7 +82,7 @@ fun AdvanceLedgerScreen(
                             .background(Slate800, RoundedCornerShape(10.dp))
                             .padding(10.dp)
                     ) {
-                        Text("Total Earned", fontSize = 10.sp, color = Slate400)
+                        Text(if (isMy) "စုစုပေါင်းရငွေ" else "Total Earned", fontSize = 10.sp, color = Slate400)
                         Text(ExcelExportHelper.formatCurrency(totalEarned), fontSize = 13.sp, fontWeight = FontWeight.Bold, color = WagesGreen)
                     }
 
@@ -88,7 +92,7 @@ fun AdvanceLedgerScreen(
                             .background(Slate800, RoundedCornerShape(10.dp))
                             .padding(10.dp)
                     ) {
-                        Text("Total Advance", fontSize = 10.sp, color = Slate400)
+                        Text(if (isMy) "ကြိုထုတ်ငွေ" else "Total Advance", fontSize = 10.sp, color = Slate400)
                         Text(ExcelExportHelper.formatCurrency(totalAdvance), fontSize = 13.sp, fontWeight = FontWeight.Bold, color = AdvanceRedLight)
                     }
 
@@ -98,7 +102,7 @@ fun AdvanceLedgerScreen(
                             .background(Slate800, RoundedCornerShape(10.dp))
                             .padding(10.dp)
                     ) {
-                        Text("Total Paid", fontSize = 10.sp, color = Slate400)
+                        Text(if (isMy) "ပေးငွေ" else "Total Paid", fontSize = 10.sp, color = Slate400)
                         Text(ExcelExportHelper.formatCurrency(totalPaid), fontSize = 13.sp, fontWeight = FontWeight.Bold, color = OtBlueLight)
                     }
 
@@ -108,7 +112,7 @@ fun AdvanceLedgerScreen(
                             .background(Slate800, RoundedCornerShape(10.dp))
                             .padding(10.dp)
                     ) {
-                        Text("Outstanding", fontSize = 10.sp, color = Slate400)
+                        Text(if (isMy) "ပေးရန်ကျန်" else "Outstanding", fontSize = 10.sp, color = Slate400)
                         Text(ExcelExportHelper.formatCurrency(totalBalance), fontSize = 13.sp, fontWeight = FontWeight.Bold, color = ConstructionGold)
                     }
                 }
@@ -122,17 +126,17 @@ fun AdvanceLedgerScreen(
                     Tab(
                         selected = selectedTab == 0,
                         onClick = { selectedTab = 0 },
-                        text = { Text("Worker Ledger", fontSize = 12.sp, fontWeight = FontWeight.Bold) }
+                        text = { Text(if (isMy) "လုပ်သားတစ်ဦးချင်း" else "Worker Ledger", fontSize = 12.sp, fontWeight = FontWeight.Bold) }
                     )
                     Tab(
                         selected = selectedTab == 1,
                         onClick = { selectedTab = 1 },
-                        text = { Text("Site Summary", fontSize = 12.sp, fontWeight = FontWeight.Bold) }
+                        text = { Text(if (isMy) "ဆိုဒ်အလိုက်ရှင်းတမ်း" else "Site Summary", fontSize = 12.sp, fontWeight = FontWeight.Bold) }
                     )
                     Tab(
                         selected = selectedTab == 2,
                         onClick = { selectedTab = 2 },
-                        text = { Text("Advance Log", fontSize = 12.sp, fontWeight = FontWeight.Bold) }
+                        text = { Text(if (isMy) "ကြိုထုတ်ငွေမှတ်တမ်း" else "Advance Log", fontSize = 12.sp, fontWeight = FontWeight.Bold) }
                     )
                 }
             }

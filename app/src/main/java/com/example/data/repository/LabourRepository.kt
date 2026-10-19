@@ -78,6 +78,9 @@ class LabourRepository(
     suspend fun deleteAttendanceById(id: Long) =
         attendanceDao.deleteById(id)
 
+    suspend fun getAllAttendanceList(): List<AttendanceRecord> =
+        attendanceDao.getAllAttendanceList()
+
     // Clear and Reset Actions
     suspend fun clearAllAttendance() =
         attendanceDao.clearAllAttendance()

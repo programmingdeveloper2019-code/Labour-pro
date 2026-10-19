@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -37,6 +38,7 @@ import com.example.util.LanguageManager
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        LanguageManager.init(this)
         enableEdgeToEdge()
         setContent {
             MyApplicationTheme {
@@ -86,19 +88,19 @@ fun MainAppRoot(viewModel: LabourViewModel = viewModel()) {
                         }
                         Column {
                             Text(
-                                text = LanguageManager.getString("app_title"),
+                                text = LanguageManager.getString("app_title", currentLanguage),
                                 fontWeight = FontWeight.ExtraBold,
                                 fontSize = 18.sp
                             )
                             Text(
                                 text = when (currentScreen) {
-                                    AppScreen.DASHBOARD -> LanguageManager.getString("dashboard_subtitle")
-                                    AppScreen.POS_ENTRY -> LanguageManager.getString("pos_subtitle")
-                                    AppScreen.ATTENDANCE_LIST -> LanguageManager.getString("log_subtitle")
-                                    AppScreen.WORKER_MASTER -> LanguageManager.getString("worker_subtitle")
-                                    AppScreen.SITE_MASTER -> LanguageManager.getString("site_subtitle")
-                                    AppScreen.ADVANCE_LEDGER -> LanguageManager.getString("ledger_subtitle")
-                                    AppScreen.EXCEL_EXPORT -> LanguageManager.getString("export_subtitle")
+                                    AppScreen.DASHBOARD -> LanguageManager.getString("dashboard_subtitle", currentLanguage)
+                                    AppScreen.POS_ENTRY -> LanguageManager.getString("pos_subtitle", currentLanguage)
+                                    AppScreen.ATTENDANCE_LIST -> LanguageManager.getString("log_subtitle", currentLanguage)
+                                    AppScreen.WORKER_MASTER -> LanguageManager.getString("worker_subtitle", currentLanguage)
+                                    AppScreen.SITE_MASTER -> LanguageManager.getString("site_subtitle", currentLanguage)
+                                    AppScreen.ADVANCE_LEDGER -> LanguageManager.getString("ledger_subtitle", currentLanguage)
+                                    AppScreen.EXCEL_EXPORT -> LanguageManager.getString("export_subtitle", currentLanguage)
                                 },
                                 fontSize = 11.sp,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -223,8 +225,17 @@ fun MainAppRoot(viewModel: LabourViewModel = viewModel()) {
                 NavigationBarItem(
                     selected = currentScreen == AppScreen.DASHBOARD,
                     onClick = { viewModel.navigateTo(AppScreen.DASHBOARD) },
-                    icon = { Icon(Icons.Default.Dashboard, contentDescription = "Dashboard") },
-                    label = { Text(LanguageManager.getString("nav_home"), fontSize = 11.sp) },
+                    icon = { Icon(Icons.Default.Dashboard, contentDescription = LanguageManager.getString("nav_home", currentLanguage)) },
+                    label = { 
+                        Text(
+                            text = LanguageManager.getString("nav_home", currentLanguage),
+                            fontSize = 10.5.sp,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            fontWeight = if (currentScreen == AppScreen.DASHBOARD) FontWeight.Bold else FontWeight.Medium
+                        ) 
+                    },
+                    alwaysShowLabel = true,
                     colors = NavigationBarItemDefaults.colors(indicatorColor = PrimaryContainerLight),
                     modifier = Modifier.testTag("nav_item_dashboard")
                 )
@@ -232,8 +243,17 @@ fun MainAppRoot(viewModel: LabourViewModel = viewModel()) {
                 NavigationBarItem(
                     selected = currentScreen == AppScreen.WORKER_MASTER,
                     onClick = { viewModel.navigateTo(AppScreen.WORKER_MASTER) },
-                    icon = { Icon(Icons.Default.People, contentDescription = "Workers") },
-                    label = { Text(LanguageManager.getString("nav_workers"), fontSize = 11.sp) },
+                    icon = { Icon(Icons.Default.People, contentDescription = LanguageManager.getString("nav_workers", currentLanguage)) },
+                    label = { 
+                        Text(
+                            text = LanguageManager.getString("nav_workers", currentLanguage),
+                            fontSize = 10.5.sp,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            fontWeight = if (currentScreen == AppScreen.WORKER_MASTER) FontWeight.Bold else FontWeight.Medium
+                        ) 
+                    },
+                    alwaysShowLabel = true,
                     colors = NavigationBarItemDefaults.colors(indicatorColor = PrimaryContainerLight),
                     modifier = Modifier.testTag("nav_item_workers")
                 )
@@ -241,8 +261,17 @@ fun MainAppRoot(viewModel: LabourViewModel = viewModel()) {
                 NavigationBarItem(
                     selected = currentScreen == AppScreen.POS_ENTRY,
                     onClick = { viewModel.navigateTo(AppScreen.POS_ENTRY) },
-                    icon = { Icon(Icons.Default.TouchApp, contentDescription = "POS Entry") },
-                    label = { Text(LanguageManager.getString("nav_pos"), fontSize = 11.sp) },
+                    icon = { Icon(Icons.Default.TouchApp, contentDescription = LanguageManager.getString("nav_pos", currentLanguage)) },
+                    label = { 
+                        Text(
+                            text = LanguageManager.getString("nav_pos", currentLanguage),
+                            fontSize = 10.5.sp,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            fontWeight = if (currentScreen == AppScreen.POS_ENTRY) FontWeight.Bold else FontWeight.Medium
+                        ) 
+                    },
+                    alwaysShowLabel = true,
                     colors = NavigationBarItemDefaults.colors(indicatorColor = PrimaryContainerLight),
                     modifier = Modifier.testTag("nav_item_pos")
                 )
@@ -250,8 +279,17 @@ fun MainAppRoot(viewModel: LabourViewModel = viewModel()) {
                 NavigationBarItem(
                     selected = currentScreen == AppScreen.ATTENDANCE_LIST,
                     onClick = { viewModel.navigateTo(AppScreen.ATTENDANCE_LIST) },
-                    icon = { Icon(Icons.Default.FormatListBulleted, contentDescription = "Log") },
-                    label = { Text(LanguageManager.getString("nav_log"), fontSize = 11.sp) },
+                    icon = { Icon(Icons.Default.FormatListBulleted, contentDescription = LanguageManager.getString("nav_log", currentLanguage)) },
+                    label = { 
+                        Text(
+                            text = LanguageManager.getString("nav_log", currentLanguage),
+                            fontSize = 10.5.sp,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            fontWeight = if (currentScreen == AppScreen.ATTENDANCE_LIST) FontWeight.Bold else FontWeight.Medium
+                        ) 
+                    },
+                    alwaysShowLabel = true,
                     colors = NavigationBarItemDefaults.colors(indicatorColor = PrimaryContainerLight),
                     modifier = Modifier.testTag("nav_item_log")
                 )
@@ -259,8 +297,17 @@ fun MainAppRoot(viewModel: LabourViewModel = viewModel()) {
                 NavigationBarItem(
                     selected = currentScreen == AppScreen.ADVANCE_LEDGER,
                     onClick = { viewModel.navigateTo(AppScreen.ADVANCE_LEDGER) },
-                    icon = { Icon(Icons.Default.AccountBalanceWallet, contentDescription = "Ledger") },
-                    label = { Text(LanguageManager.getString("nav_ledger"), fontSize = 11.sp) },
+                    icon = { Icon(Icons.Default.AccountBalanceWallet, contentDescription = LanguageManager.getString("nav_ledger", currentLanguage)) },
+                    label = { 
+                        Text(
+                            text = LanguageManager.getString("nav_ledger", currentLanguage),
+                            fontSize = 10.5.sp,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            fontWeight = if (currentScreen == AppScreen.ADVANCE_LEDGER) FontWeight.Bold else FontWeight.Medium
+                        ) 
+                    },
+                    alwaysShowLabel = true,
                     colors = NavigationBarItemDefaults.colors(indicatorColor = PrimaryContainerLight),
                     modifier = Modifier.testTag("nav_item_ledger")
                 )

@@ -160,49 +160,6 @@ fun ClearSampleDialog(
                         Icon(Icons.Default.ChevronRight, contentDescription = null, tint = Slate400)
                     }
                 }
-
-                // Option 3: Reload Standard Myanmar Workforce
-                Card(
-                    onClick = { confirmActionType = "RELOAD_WORKERS" },
-                    shape = RoundedCornerShape(12.dp),
-                    colors = CardDefaults.cardColors(containerColor = ConstructionGold.copy(alpha = 0.15f)),
-                    modifier = Modifier.testTag("reload_standard_workforce_btn")
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(14.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        Surface(
-                            shape = RoundedCornerShape(10.dp),
-                            color = ConstructionGold
-                        ) {
-                            Icon(
-                                Icons.Default.GroupAdd,
-                                contentDescription = null,
-                                tint = Slate900,
-                                modifier = Modifier
-                                    .padding(8.dp)
-                                    .size(22.dp)
-                            )
-                        }
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(
-                                text = if (isMy) "အခြေခံ လုပ်သားစာရင်း အမြဲပြပေးမည်" else "Load Standard Workforce",
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 14.sp
-                            )
-                            Text(
-                                text = if (isMy) "လက်သမား၊ ပန်းရံ၊ သံချည်၊ ဝရိန်၊ လျှပ်စစ်၊ အကူ အပြည့်အစုံ ပြန်ထည့်ပါမည်" else "Restores standard Myanmar construction workforce",
-                                fontSize = 11.sp,
-                                color = Slate600
-                            )
-                        }
-                        Icon(Icons.Default.ChevronRight, contentDescription = null, tint = Slate400)
-                    }
-                }
             }
         },
         confirmButton = {
@@ -226,7 +183,6 @@ fun ClearSampleDialog(
                     text = when (action) {
                         "ATTENDANCE_ONLY" -> if (isMy) "တက်ရောက်မှု မှတ်တမ်းများ ဖျက်မည်လား?" else "Clear All Attendance Records?"
                         "WIPE_ALL" -> if (isMy) "ဒေတာ အားလုံး ဖျက်မည်လား?" else "Wipe All Data Completely?"
-                        "RELOAD_WORKERS" -> if (isMy) "အခြေခံ လုပ်သားစာရင်း ပြန်ထည့်မည်လား?" else "Load Standard Workforce?"
                         else -> if (isMy) "နမူနာဒေတာ ပြန်လည်ထည့်မည်လား?" else "Reload Demo Sample Data?"
                     },
                     fontWeight = FontWeight.Bold
@@ -244,11 +200,6 @@ fun ClearSampleDialog(
                             "⚠️ သတိပေးချက်- ဆောက်လုပ်ရေးဆိုဒ်များ၊ လုပ်သားများနှင့် တက်ရောက်မှု မှတ်တမ်းများ အားလုံးကို အပြီးတိုင် ဖျက်ဆီးပစ်ပါမည်။ အသစ်လုံးဝပြန်စပါမည်။"
                         } else {
                             "⚠️ Warning: This will permanently delete ALL sites, workers, and attendance records from the app. You will start with an empty database."
-                        }
-                        "RELOAD_WORKERS" -> if (isMy) {
-                            "လုပ်သားစာရင်း အမြဲပြည့်စုံနေစေရန် လက်သမား၊ ပန်းရံ၊ သံချည်၊ ဝရိန်၊ လျှပ်စစ်၊ အကူ အစရှိသော အခြေခံလုပ်သားစာရင်းကို စနစ်တကျ ပြန်လည်ထည့်သွင်းပေးပါမည်။"
-                        } else {
-                            "This will populate the standard Myanmar construction workforce so your worker list is always complete."
                         }
                         else -> if (isMy) {
                             "နမူနာဒေတာများကို လက်ရှိဒေတာပေါ်တွင် အစားထိုးထည့်သွင်းပါမည်။"
@@ -278,17 +229,6 @@ fun ClearSampleDialog(
                                     Toast.makeText(
                                         context,
                                         if (isMy) "ဒေတာ အားလုံးကို အပြီးတိုင် ဖျက်ပြီးပါပြီ!" else "All data wiped successfully!",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                    confirmActionType = null
-                                    onDismiss()
-                                }
-                            }
-                            "RELOAD_WORKERS" -> {
-                                viewModel.reloadDefaultMyanmarWorkforce {
-                                    Toast.makeText(
-                                        context,
-                                        if (isMy) "အခြေခံ လုပ်သားစာရင်း ပြန်လည်ထည့်သွင်းပြီးပါပြီ!" else "Standard workforce loaded!",
                                         Toast.LENGTH_SHORT
                                     ).show()
                                     confirmActionType = null

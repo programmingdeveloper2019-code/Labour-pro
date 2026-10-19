@@ -70,12 +70,12 @@ object PermanentWorkerStore {
                 tempFile.renameTo(file)
             }
 
-            // Layer 2: SharedPreferences
+            // Layer 2: SharedPreferences (synchronous write for durability)
             val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
             prefs.edit()
                 .putString(KEY_WORKERS_JSON, jsonString)
                 .putLong("last_save_time", System.currentTimeMillis())
-                .apply()
+                .commit()
 
             // Layer 3: External app storage mirror (optional safety)
             try {

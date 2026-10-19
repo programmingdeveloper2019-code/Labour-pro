@@ -61,7 +61,7 @@ fun SiteMasterScreen(
             ) {
                 Icon(Icons.Default.AddBusiness, contentDescription = null)
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("Add Construction Site", fontWeight = FontWeight.Bold)
+                Text(if (currentLanguage == AppLanguage.MYANMAR) "ဆိုဒ်အသစ် ထည့်မည်" else "Add Construction Site", fontWeight = FontWeight.Bold)
             }
         }
     ) { padding ->
@@ -81,12 +81,12 @@ fun SiteMasterScreen(
                     verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
                     Text(
-                        text = "Construction Site Master",
+                        text = if (currentLanguage == AppLanguage.MYANMAR) "ဆောက်လုပ်ရေးဆိုဒ် စာရင်း" else "Construction Site Master",
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold
                     )
                     Text(
-                        text = "${sites.size} project locations (${sites.count { it.status == "Ongoing" }} active ongoing)",
+                        text = if (currentLanguage == AppLanguage.MYANMAR) "ဆိုဒ်ပေါင်း ${sites.size} ခု (လုပ်ဆောင်ဆဲ ${sites.count { it.status == "Ongoing" }} ခု)" else "${sites.size} project locations (${sites.count { it.status == "Ongoing" }} active ongoing)",
                         fontSize = 12.sp,
                         color = Slate500
                     )

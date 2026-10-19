@@ -93,7 +93,7 @@ data class PosFormState(
         get() = totalEarned - advanceToday - paidToday
 }
 
-class LabourViewModel(application: Application) : AndroidViewModel(application) {
+class LabourViewModel(private val app: Application) : AndroidViewModel(app) {
 
     private val repository: LabourRepository
 
@@ -123,7 +123,7 @@ class LabourViewModel(application: Application) : AndroidViewModel(application) 
     val markedWorkerIdsForSelectedDate: StateFlow<List<String>>
 
     init {
-        val database = AppDatabase.getDatabase(application, viewModelScope)
+        val database = AppDatabase.getDatabase(app, viewModelScope)
         repository = LabourRepository(
             database.workerDao(),
             database.siteDao(),
@@ -177,21 +177,32 @@ class LabourViewModel(application: Application) : AndroidViewModel(application) 
         // Guarantees NO sample workers exist, and only genuine user-entered workers are preserved
         viewModelScope.launch {
             try {
-                // Ensure user-entered workers are NEVER purged or deleted.
+                // 1. Ensure user-entered workers are NEVER purged or deleted.
                 // Always sync between Room DB and PermanentWorkerStore so workers never disappear.
                 val dbWorkers = repository.getAllWorkersList()
-                val permWorkers = com.example.util.PermanentWorkerStore.loadWorkers(application) ?: emptyList()
+                val permWorkers = com.example.util.PermanentWorkerStore.loadWorkers(app) ?: emptyList()
 
                 if (dbWorkers.isEmpty() && permWorkers.isNotEmpty()) {
                     repository.insertWorkers(permWorkers)
                 } else if (dbWorkers.isNotEmpty()) {
-                    com.example.util.PermanentWorkerStore.saveWorkers(application, dbWorkers)
+                    com.example.util.PermanentWorkerStore.saveWorkers(app, dbWorkers)
+                }
+
+                // 2. Ensure Daily Attendance records are NEVER lost
+                // Sync between Room DB and PermanentAttendanceStore
+                val dbAttendance = repository.getAllAttendanceList()
+                val permAttendance = com.example.util.PermanentAttendanceStore.loadAttendance(app) ?: emptyList()
+
+                if (dbAttendance.isEmpty() && permAttendance.isNotEmpty()) {
+                    repository.insertAttendanceList(permAttendance)
+                } else if (dbAttendance.isNotEmpty()) {
+                    com.example.util.PermanentAttendanceStore.saveAttendance(app, dbAttendance)
                 }
 
                 // 3. Check for Sites recovery if sites are empty
                 val currentSites = repository.allSites.first()
                 if (currentSites.isEmpty()) {
-                    val vaultBackup = BackupManager.findExistingPersistentVault(application)
+                    val vaultBackup = BackupManager.findExistingPersistentVault(app)
                     if (vaultBackup != null && vaultBackup.sites.isNotEmpty()) {
                         for (site in vaultBackup.sites) {
                             repository.insertSite(site)
@@ -199,7 +210,16 @@ class LabourViewModel(application: Application) : AndroidViewModel(application) 
                     }
                 }
 
-                // 4. Keep auto-vault synchronized across layers
+                // 4. If attendance was empty in both DB and PermStore, check Persistent Auto-Vault
+                if (dbAttendance.isEmpty() && permAttendance.isEmpty()) {
+                    val vaultBackup = BackupManager.findExistingPersistentVault(app)
+                    if (vaultBackup != null && vaultBackup.attendance.isNotEmpty()) {
+                        repository.insertAttendanceList(vaultBackup.attendance)
+                        com.example.util.PermanentAttendanceStore.saveAttendance(app, vaultBackup.attendance)
+                    }
+                }
+
+                // 5. Keep auto-vault synchronized across layers
                 triggerAutoVaultSave()
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -211,7 +231,7 @@ class LabourViewModel(application: Application) : AndroidViewModel(application) 
     private val _detectedPersistentVault = MutableStateFlow<LabourBackupData?>(null)
     val detectedPersistentVault: StateFlow<LabourBackupData?> = _detectedPersistentVault.asStateFlow()
 
-    private val _lastVaultBackupTime = MutableStateFlow(BackupManager.getLastBackupTime(application))
+    private val _lastVaultBackupTime = MutableStateFlow(BackupManager.getLastBackupTime(app))
     val lastVaultBackupTime: StateFlow<Long> = _lastVaultBackupTime.asStateFlow()
 
     fun navigateTo(screen: AppScreen) {
@@ -453,6 +473,9 @@ class LabourViewModel(application: Application) : AndroidViewModel(application) 
             } else {
                 repository.insertAttendance(record)
             }
+            // Synchronize with PermanentAttendanceStore so daily attendance is never lost
+            val currentAllAttendance = repository.getAllAttendanceList()
+            com.example.util.PermanentAttendanceStore.saveAttendance(app, currentAllAttendance)
 
             // Find next available active worker if rapid POS entry requested
             val markedIds = repository.getRecordForDateAndWorker(form.selectedDate, worker.workerId)?.let {
@@ -498,6 +521,12 @@ class LabourViewModel(application: Application) : AndroidViewModel(application) 
     fun deleteAttendance(record: AttendanceRecord, onComplete: () -> Unit = {}) {
         viewModelScope.launch {
             repository.deleteAttendance(record)
+            val remainingAttendance = repository.getAllAttendanceList()
+            com.example.util.PermanentAttendanceStore.saveAttendance(
+                app,
+                remainingAttendance,
+                explicitWipe = remainingAttendance.isEmpty()
+            )
             triggerAutoVaultSave()
             val isMy = LanguageManager.currentLanguage.value == AppLanguage.MYANMAR
             val msg = if (isMy) {
@@ -645,9 +674,12 @@ class LabourViewModel(application: Application) : AndroidViewModel(application) 
     fun clearAttendanceOnly(onComplete: () -> Unit = {}) {
         viewModelScope.launch {
             repository.clearAllAttendance()
+            com.example.util.PermanentAttendanceStore.clearAttendance(app)
+            triggerAutoVaultSave()
             resetForm()
+            val isMy = LanguageManager.currentLanguage.value == AppLanguage.MYANMAR
             _posForm.value = _posForm.value.copy(
-                successMessage = "All attendance records cleared. You can now start fresh daily logging!"
+                successMessage = if (isMy) "တက်ရောက်မှုမှတ်တမ်းများအားလုံး ဖျက်ပြီးပါပြီ။ စာရင်းအသစ် ပြန်လည်သွင်းယူနိုင်ပါသည်။" else "All attendance records cleared. You can now start fresh daily logging!"
             )
             onComplete()
         }
@@ -656,11 +688,15 @@ class LabourViewModel(application: Application) : AndroidViewModel(application) 
     fun clearAllDataCompletely(onComplete: () -> Unit = {}) {
         viewModelScope.launch {
             repository.clearAllData()
+            com.example.util.PermanentWorkerStore.clearWorkers(app)
+            com.example.util.PermanentAttendanceStore.clearAttendance(app)
+            triggerAutoVaultSave()
+            val isMy = LanguageManager.currentLanguage.value == AppLanguage.MYANMAR
             _posForm.value = PosFormState(
                 selectedDate = todayDateString,
                 selectedSite = null,
                 selectedWorker = null,
-                successMessage = "Database cleared completely. Clean slate ready for your custom data."
+                successMessage = if (isMy) "ဒေတာအားလုံးကို အပြီးတိုင် ဖျက်ပြီးပါပြီ။ အချက်အလက်အသစ်များ စတင်ထည့်သွင်းနိုင်ပါပြီ။" else "Database cleared completely. Clean slate ready for your custom data."
             )
             onComplete()
         }
@@ -682,9 +718,16 @@ class LabourViewModel(application: Application) : AndroidViewModel(application) 
     fun saveBatchAttendance(records: List<AttendanceRecord>, onComplete: () -> Unit = {}) {
         viewModelScope.launch {
             repository.insertAttendanceList(records)
+            val currentAllAttendance = repository.getAllAttendanceList()
+            com.example.util.PermanentAttendanceStore.saveAttendance(app, currentAllAttendance)
             triggerAutoVaultSave()
+            val isMy = LanguageManager.currentLanguage.value == AppLanguage.MYANMAR
             _posForm.value = _posForm.value.copy(
-                successMessage = "Batch attendance saved for ${records.size} workers successfully!"
+                successMessage = if (isMy) {
+                    "လုပ်သား ${records.size} ဦး၏ နေ့စဉ်တက်ရောက်မှုစာရင်းကို အောင်မြင်စွာ မှတ်တမ်းတင်ပြီးပါပြီ!"
+                } else {
+                    "Batch attendance saved for ${records.size} workers successfully!"
+                }
             )
             onComplete()
         }
@@ -706,11 +749,22 @@ class LabourViewModel(application: Application) : AndroidViewModel(application) 
         viewModelScope.launch {
             try {
                 repository.restoreData(backup, replaceExisting)
+                // Persist restored workers and attendance to permanent storage
+                val restoredWorkers = repository.getAllWorkersList()
+                com.example.util.PermanentWorkerStore.saveWorkers(app, restoredWorkers)
+                val restoredAttendance = repository.getAllAttendanceList()
+                com.example.util.PermanentAttendanceStore.saveAttendance(app, restoredAttendance)
                 triggerAutoVaultSave()
+
                 val defaultSite = backup.sites.firstOrNull() ?: allSites.value.firstOrNull()
+                val isMy = LanguageManager.currentLanguage.value == AppLanguage.MYANMAR
                 _posForm.value = _posForm.value.copy(
                     selectedSite = defaultSite,
-                    successMessage = "Restored ${backup.sites.size} sites, ${backup.workers.size} workers, and ${backup.attendance.size} attendance records successfully!"
+                    successMessage = if (isMy) {
+                        "ဆိုဒ် (${backup.sites.size}) ခု၊ လုပ်သား (${backup.workers.size}) ဦး နှင့် နေ့စဉ်တက်ရောက်မှုမှတ်တမ်း (${backup.attendance.size}) ခု အားလုံးကို အောင်မြင်စွာ ပြန်လည်ရယူပြီးပါပြီ!"
+                    } else {
+                        "Restored ${backup.sites.size} sites, ${backup.workers.size} workers, and ${backup.attendance.size} daily attendance records successfully!"
+                    }
                 )
                 onComplete(true)
             } catch (e: Exception) {

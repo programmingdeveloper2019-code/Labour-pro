@@ -1,5 +1,6 @@
 package com.example.util
 
+import android.content.Context
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -10,23 +11,43 @@ enum class AppLanguage(val code: String, val displayName: String, val nativeName
 }
 
 object LanguageManager {
+    private const val PREFS_NAME = "app_language_prefs"
+    private const val KEY_LANG = "key_selected_language"
+
     private val _currentLanguage = MutableStateFlow(AppLanguage.MYANMAR)
     val currentLanguage: StateFlow<AppLanguage> = _currentLanguage.asStateFlow()
 
+    private var appContext: Context? = null
+
+    fun init(context: Context) {
+        appContext = context.applicationContext
+        val prefs = appContext?.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val saved = prefs?.getString(KEY_LANG, null)
+        if (saved == AppLanguage.ENGLISH.code) {
+            _currentLanguage.value = AppLanguage.ENGLISH
+        } else if (saved == AppLanguage.MYANMAR.code) {
+            _currentLanguage.value = AppLanguage.MYANMAR
+        }
+    }
+
     fun setLanguage(language: AppLanguage) {
         _currentLanguage.value = language
+        appContext?.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)?.edit()
+            ?.putString(KEY_LANG, language.code)
+            ?.apply()
     }
 
     fun toggleLanguage() {
-        _currentLanguage.value = if (_currentLanguage.value == AppLanguage.ENGLISH) {
+        val next = if (_currentLanguage.value == AppLanguage.ENGLISH) {
             AppLanguage.MYANMAR
         } else {
             AppLanguage.ENGLISH
         }
+        setLanguage(next)
     }
 
-    fun getString(key: String): String {
-        val isMy = _currentLanguage.value == AppLanguage.MYANMAR
+    fun getString(key: String, language: AppLanguage = _currentLanguage.value): String {
+        val isMy = language == AppLanguage.MYANMAR
         return when (key) {
             "app_title" -> if (isMy) "LabourPro" else "LabourPro"
             "dashboard_subtitle" -> if (isMy) "ဆိုဒ်နှင့် လုပ်အားခ စီမံခန့်ခွဲမှု" else "Site & Wages Dashboard"
@@ -37,12 +58,13 @@ object LanguageManager {
             "ledger_subtitle" -> if (isMy) "ကြိုထုတ်ငွေနှင့် လက်ကျန်စာရင်း" else "Advance & Wage Ledger"
             "export_subtitle" -> if (isMy) "အစီရင်ခံစာ (PDF, Excel, CSV) ထုတ်ယူရန်" else "Report (PDF, Excel, CSV) Export"
 
-            // Bottom Nav
+            // Bottom Nav Bar Items (Short & Clear in both languages)
             "nav_home" -> if (isMy) "ပင်မ" else "Home"
-            "nav_workers" -> if (isMy) "လုပ်သားစာရင်း" else "Workers"
+            "nav_workers" -> if (isMy) "လုပ်သား" else "Workers"
             "nav_pos" -> if (isMy) "စာရင်းသွင်း" else "POS Entry"
-            "nav_log" -> if (isMy) "တက်ရောက်မှု" else "Log"
+            "nav_log" -> if (isMy) "တက်ရောက်မှု" else "Daily Log"
             "nav_ledger" -> if (isMy) "ငွေစာရင်း" else "Ledger"
+            "nav_sites" -> if (isMy) "ဆိုဒ်များ" else "Sites"
             "nav_excel" -> if (isMy) "အစီရင်ခံစာ" else "Report"
 
             // POS Form Headers
